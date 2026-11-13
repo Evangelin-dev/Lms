@@ -202,8 +202,19 @@ function Learnova() {
       <header className="sticky top-0 z-40 border-b border-border/70 bg-card/95 backdrop-blur">
         <div className="mx-auto flex h-[76px] max-w-[1320px] items-center justify-between gap-5 px-5 md:px-9">
           <Button variant="ghost" className="gap-2 px-0 text-foreground hover:bg-transparent" onClick={() => setView("store")} aria-label="Learnova home">
-            <span className="grid size-9 place-items-center rounded-xl bg-teal text-primary-foreground"><GraduationCap size={20} /></span>
-            <span className="font-display text-[21px] font-bold">Learnova</span>
+            <div className="flex items-center gap-3">
+  {/* Logo image */}
+  <img
+    src="/vilaiyosai-logo.png"
+    alt="Vilaiyosai Logo"
+    className="h-10 w-10 object-contain"
+  />
+
+  {/* Website name */}
+  <span className="text-2xl font-bold text-[#123B70]">
+    Vilaiyosai
+  </span>
+</div>
           </Button>
           <nav className="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
             <Button variant="ghost" className="px-1 text-sm" onClick={() => { setView("store"); document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" }); }}>Courses</Button>
