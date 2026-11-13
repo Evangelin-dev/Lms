@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { lovable } from "@/integrations/lovable";
 import { supabase } from "@/integrations/supabase/client";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -155,15 +154,6 @@ function Learnova() {
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "We couldn’t sign you in. Try again.");
     } finally { setBusy(false); }
-  }
-
-  async function socialSignIn(provider: "google") {
-    setBusy(true);
-    try {
-      const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin });
-      if (result.error) throw result.error;
-    } catch (error) { toast.error(error instanceof Error ? error.message : "Sign-in didn’t complete. Try again."); }
-    finally { setBusy(false); }
   }
 
   async function signOut() {
@@ -944,8 +934,7 @@ function Learnova() {
         </DialogContent>
       </Dialog>
 
-{/* Premium split-screen authentication UI.
-    Existing handleAuth and socialSignIn functions remain unchanged. */}
+{/* Premium split-screen authentication UI. */}
 <Dialog
   open={authOpen}
   onOpenChange={(open) => {
@@ -1125,23 +1114,6 @@ function Learnova() {
             <ArrowRight size={16} />
           </Button>
         </form>
-
-        <div className="my-5 flex items-center gap-3 text-[10px] font-medium tracking-wider text-slate-400">
-          <span className="h-px flex-1 bg-border" />
-          OR CONTINUE WITH
-          <span className="h-px flex-1 bg-border" />
-        </div>
-
-        <div className="grid grid-cols-1 gap-3">
-          <Button
-            disabled={busy}
-            variant="outline"
-            className="h-11 rounded-xl"
-            onClick={() => void socialSignIn("google")}
-          >
-            <GoogleMark /> Google
-          </Button>
-        </div>
 
         <p className="mt-6 text-center text-sm text-slate">
           {authMode === "signup"
