@@ -275,7 +275,71 @@ function Learnova() {
         <section className="bg-teal px-5 py-12 text-primary-foreground md:px-9"><div className="mx-auto grid max-w-[1320px] gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center"><div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-turquoise">Continue your learning journey</p><h2 className="mt-3 font-display text-3xl font-bold">Small steps. Big momentum.</h2><p className="mt-2 text-sm text-white/75">Pick up where you left off and make today count.</p><Button variant="secondary" className="mt-5 bg-white/10 text-primary-foreground hover:bg-white/20" onClick={() => go("dashboard")}>View learning dashboard <ArrowRight size={15} /></Button></div><div className="grid gap-3 sm:grid-cols-3">{demoCourses.slice(0,3).map((course,i) => <button key={course.id} onClick={() => void openCourse(course)} className="flex items-center gap-3 rounded-lg border border-white/15 bg-white/5 p-3 text-left transition-colors hover:bg-white/10"><img src={course.cover} alt="" loading="lazy" width={960} height={720} className="size-14 shrink-0 rounded-md object-cover"/><span className="min-w-0 flex-1"><strong className="block truncate text-sm">{course.title}</strong><small className="mt-1 block text-white/65">{[60,35,80][i]}% complete</small><span className="mt-2 block h-1 rounded-full bg-white/20"><span className="block h-full rounded-full bg-turquoise" style={{ width: `${[60,35,80][i]}%` }} /></span></span><ArrowRight size={15} className="shrink-0"/></button>)}</div></div></section>
         <section className="mx-auto max-w-[1320px] px-5 py-12 md:px-9 md:py-16"><div className="text-center"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-teal">The people behind the lessons</p><h2 className="mt-2 font-display text-3xl font-bold">Meet our expert instructors</h2><p className="mt-2 text-sm text-slate">Learn from professionals who love teaching.</p></div><div className="mx-auto mt-8 grid max-w-[840px] gap-4 sm:grid-cols-3">{[["CW","Cameron Williamson","Product designer","8 years experience"],["DR","Dianne Russell","Data scientist","10 years experience"],["DL","Devon Lane","Full-stack developer","7 years experience"]].map(([initials,name,role,experience],i)=><div key={name} className="border border-border/70 bg-card p-5 text-center"><Avatar className="mx-auto size-16"><AvatarFallback className={`text-xl ${i===1?"bg-tint text-teal":"bg-secondary text-primary"}`}>{initials.slice(0,1)}</AvatarFallback></Avatar><h3 className="mt-3 text-sm font-semibold">{name}</h3><p className="mt-1 text-xs text-slate">{role} · {experience}</p></div>)}</div></section>
         <section className="mx-5 mb-12 rounded-2xl bg-tint px-6 py-8 md:mx-9 md:px-12 md:py-10"><div className="mx-auto flex max-w-[1160px] flex-col items-start justify-between gap-5 md:flex-row md:items-center"><div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-teal">A note from the community</p><p className="mt-3 max-w-[740px] font-display text-2xl font-semibold leading-snug">“Learnova changed the way I learn. The courses are practical, engaging, and absolutely worth it.”</p><p className="mt-3 text-sm text-slate">Kristin Watson · Product manager & lifelong learner</p></div><span className="flex text-amber-500">{[0,1,2,3,4].map((i)=><Star key={i} size={17} fill="currentColor" />)}</span></div></section>
-        <section className="border-t border-border bg-card px-5 py-8 md:px-9"><div className="mx-auto grid max-w-[1320px] gap-8 md:grid-cols-[1.4fr_1fr_1fr_1fr]"><div><Button variant="ghost" className="gap-2 px-0 text-foreground"><span className="grid size-8 place-items-center rounded-lg bg-teal text-primary-foreground"><GraduationCap size={18}/></span><span className="font-display text-lg font-bold">Learnova</span></Button><p className="mt-2 max-w-xs text-xs leading-5 text-slate">Practical learning, thoughtfully made.</p></div><div><h3 className="text-sm font-semibold">Explore</h3><p className="mt-3 text-xs leading-7 text-slate">Courses<br/>Learning paths<br/>For business</p></div><div><h3 className="text-sm font-semibold">Support</h3><p className="mt-3 text-xs leading-7 text-slate">Help center<br/>Contact us<br/>Privacy policy</p></div><div><h3 className="text-sm font-semibold">Your learning</h3><Button variant="link" className="mt-2 h-auto p-0 text-xs text-teal" onClick={() => go("dashboard")}>My courses <ArrowRight size={13}/></Button><br/><Button variant="link" className="mt-2 h-auto p-0 text-xs text-teal" onClick={() => go("admin")}>Administration <ArrowRight size={13}/></Button></div></div></section>
+        
+<section className="border-t border-border bg-card px-5 py-8 md:px-9">
+  <div className="mx-auto grid max-w-[1320px] gap-8 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+
+    {/* Brand logo and name */}
+    <div>
+      <Button variant="ghost" className="gap-3 px-0 text-foreground">
+        <img
+          src="/vilaiyosai-logo.png"
+          alt="Vilaiyosai Logo"
+          className="h-10 w-10 object-contain"
+        />
+        <span className="font-display text-lg font-bold text-[#123B70]">
+          Vilaiyosai
+        </span>
+      </Button>
+
+      <p className="mt-2 max-w-xs text-xs leading-5 text-slate">
+        Learn, grow, and create your future with Vilaiyosai.
+      </p>
+    </div>
+
+    {/* Explore */}
+    <div>
+      <h3 className="text-sm font-semibold">Explore</h3>
+      <p className="mt-3 text-xs leading-7 text-slate">
+        Courses<br />
+        Learning paths<br />
+        For business
+      </p>
+    </div>
+
+    {/* Support */}
+    <div>
+      <h3 className="text-sm font-semibold">Support</h3>
+      <p className="mt-3 text-xs leading-7 text-slate">
+        Help center<br />
+        Contact us<br />
+        Privacy policy
+      </p>
+    </div>
+
+    {/* Your learning */}
+    <div>
+      <h3 className="text-sm font-semibold">Your learning</h3>
+      <Button
+        variant="link"
+        className="mt-2 h-auto p-0 text-xs text-teal"
+        onClick={() => go("dashboard")}
+      >
+        My courses <ArrowRight size={13} />
+      </Button>
+      <br />
+      <Button
+        variant="link"
+        className="mt-2 h-auto p-0 text-xs text-teal"
+        onClick={() => go("admin")}
+      >
+        Administration <ArrowRight size={13} />
+      </Button>
+    </div>
+
+  </div>
+</section>
+
       </main>}
 
       {view === "dashboard" && profile && <Dashboard profile={profile} courses={courses} courseAccess={courseAccess} progressRows={progressRows} orders={orders} onBack={() => setView("store")} onOpenCourse={(course) => void openCourse(course)} onPlay={(course) => { setPlayer({ course, lesson: { ...featuredLesson, course_id: course.id } }); setPlaying(false); }} onSignOut={() => void signOut()} />}
