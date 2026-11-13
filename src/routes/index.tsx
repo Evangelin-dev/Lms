@@ -247,7 +247,22 @@ function Learnova() {
               <div className="mt-8 flex items-center gap-3"><div className="flex -space-x-2">{["A","M","R","S","K"].map((name, i) => <Avatar key={name} className="size-9 border-2 border-background"><AvatarFallback className={`text-xs font-semibold ${i % 2 ? "bg-tint text-teal" : "bg-secondary text-primary"}`}>{name}</AvatarFallback></Avatar>)}</div><div><div className="flex items-center gap-1 text-sm font-semibold"><span className="flex text-amber-500">{[0,1,2,3,4].map((i)=><Star key={i} size={13} fill="currentColor" />)}</span><span className="ml-1">4.8</span></div><p className="text-xs text-slate">Loved by learners around the world</p></div></div>
             </div>
             <div className="relative mx-auto w-full max-w-[620px] lg:mr-0">
-              <div className="hero-frame relative aspect-[1.2/1] overflow-hidden rounded-[26px] bg-tint"><img src={courseCover(demoCourses[3])} alt="Learner studying an online course at home" width={1280} height={960} fetchPriority="high" className="h-full w-full object-cover" /><div className="absolute left-3 top-4 w-[150px] rounded-xl bg-card p-3 shadow-lg md:left-[-22px] md:top-12 md:w-[175px]"><p className="text-xs text-slate">Your progress</p><p className="mt-1 font-display text-xl font-bold">72%</p><Progress value={72} className="mt-2 h-1.5 bg-tint" /></div><div className="absolute bottom-4 left-3 rounded-xl bg-card px-3 py-2 shadow-lg md:bottom-8 md:left-[-16px]"><p className="text-[11px] text-slate">Weekly goal</p><p className="font-display text-lg font-semibold">5 of 6 hours</p></div><div className="absolute bottom-4 right-3 flex items-center gap-2 rounded-lg bg-card/95 px-3 py-2 shadow-lg md:bottom-8 md:right-5"><ShieldCheck size={18} className="text-teal" /><span className="text-xs font-medium">Learn at your pace</span></div></div>
+              <div className="hero-frame relative aspect-[1.2/1] overflow-hidden rounded-[26px] bg-tint">
+                <img src={courseCover(demoCourses[3])} alt="Learner studying an online course at home" width={1280} height={960} fetchPriority="high" className="h-full w-full object-cover" />
+              </div>
+              <div className="absolute left-3 top-4 w-[150px] rounded-xl bg-card p-3 shadow-lg md:left-[-22px] md:top-12 md:w-[175px]">
+                <p className="text-xs text-slate">Your progress</p>
+                <p className="mt-1 font-display text-xl font-bold">72%</p>
+                <Progress value={72} className="mt-2 h-1.5 bg-tint" />
+              </div>
+              <div className="absolute bottom-4 left-3 rounded-xl bg-card px-3 py-2 shadow-lg md:bottom-8 md:left-[-16px]">
+                <p className="text-[11px] text-slate">Weekly goal</p>
+                <p className="font-display text-lg font-semibold">5 of 6 hours</p>
+              </div>
+              <div className="absolute bottom-4 right-3 flex items-center gap-2 rounded-lg bg-card/95 px-3 py-2 shadow-lg md:bottom-8 md:right-5">
+                <ShieldCheck size={18} className="text-teal" />
+                <span className="text-xs font-medium">Learn at your pace</span>
+              </div>
               <span className="absolute -right-2 -top-2 size-16 rounded-full border-[9px] border-turquoise/25 md:-right-5 md:-top-5 md:size-24" aria-hidden="true" />
             </div>
           </div>
