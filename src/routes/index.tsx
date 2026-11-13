@@ -157,7 +157,7 @@ function Learnova() {
     } finally { setBusy(false); }
   }
 
-  async function socialSignIn(provider: "google" | "lovable") {
+  async function socialSignIn(provider: "google") {
     setBusy(true);
     try {
       const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin });
@@ -1132,7 +1132,7 @@ function Learnova() {
           <span className="h-px flex-1 bg-border" />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3">
           <Button
             disabled={busy}
             variant="outline"
@@ -1140,18 +1140,6 @@ function Learnova() {
             onClick={() => void socialSignIn("google")}
           >
             <GoogleMark /> Google
-          </Button>
-
-          <Button
-            disabled={busy}
-            variant="outline"
-            className="h-11 rounded-xl"
-            onClick={() => void socialSignIn("lovable")}
-          >
-            <span className="grid size-[18px] place-items-center rounded-sm bg-foreground text-[11px] font-bold text-background">
-              L
-            </span>
-            Lovable
           </Button>
         </div>
 
