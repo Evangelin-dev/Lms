@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { lovable } from "@/integrations/lovable";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,17 +13,28 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { demoCourses, categories, courseCover, formatDuration, formatMoney, type Course, type LessonSummary } from "@/lib/portal-data";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, BarChart3, BookOpen, Check, ChevronDown, CirclePlay, Clock3, Code2, Compass, CreditCard, Download, Filter, GraduationCap, Headphones, LayoutDashboard, ListFilter, LockKeyhole, LogIn, Menu, Pause, Play, Plus, Search, Settings2, ShieldCheck, Sparkles, Star, Users, Video, Volume2, X } from "lucide-react";
+import {
+  // Existing icons ko as-it-is rakho
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Learnova — Practical courses for what’s next" },
-      { name: "description", content: "Find thoughtful, practical courses in design, data and marketing. Learn at your own pace with Learnova." },
-      { property: "og:title", content: "Learnova — Practical courses for what’s next" },
-      { property: "og:description", content: "Explore practical online courses and learn at your own pace." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
+  { title: "Vilaiyosai — Learn. Grow. Achieve." },
+  {
+    name: "description",
+    content: "Explore practical online courses, develop new skills and grow with Vilaiyosai.",
+  },
+  { property: "og:title", content: "Vilaiyosai — Learn. Grow. Achieve." },
+  {
+    property: "og:description",
+    content: "Discover online courses and build skills for your future with Vilaiyosai.",
+  },
+  { property: "og:type", content: "website" },
+  { name: "twitter:card", content: "summary_large_image" },
+],
   }),
   component: Learnova,
 });
@@ -58,6 +70,8 @@ function Learnova() {
   const [courseForm, setCourseForm] = useState({ title: "", category: "Design", price: "", description: "" });
   const [adminTab, setAdminTab] = useState("Overview");
   const [playing, setPlaying] = useState(false);
+  // Password ko visible ya hidden rakhne ke liye
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -198,8 +212,8 @@ function Learnova() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-card/95 backdrop-blur">
+    <div className={`min-h-screen bg-background text-foreground ${view === "store" ? "storefront" : ""}`}>
+      <header className="storefront-header sticky top-0 z-40 border-b border-border/70 bg-card/95 backdrop-blur">
         <div className="mx-auto flex h-[76px] max-w-[1320px] items-center justify-between gap-5 px-5 md:px-9">
           <Button variant="ghost" className="gap-2 px-0 text-foreground hover:bg-transparent" onClick={() => setView("store")} aria-label="Learnova home">
             <div className="flex items-center gap-3">
@@ -237,43 +251,43 @@ function Learnova() {
       </header>
 
       {view === "store" && <main>
-        <section className="grain-surface overflow-hidden px-5 pb-10 pt-9 md:px-9 md:pb-14 md:pt-14">
+        <section className="hero-section grain-surface relative isolate overflow-hidden px-5 pb-10 pt-9 md:px-9 md:pb-14 md:pt-14">
           <div className="mx-auto grid max-w-[1240px] items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
-            <div className="relative z-10 py-4 lg:py-10">
+            <div className="hero-copy relative z-10 py-4 lg:py-10">
               <Badge className="mb-6 border-0 bg-card px-3 py-1.5 font-medium text-teal shadow-none"><Sparkles size={14} className="mr-1.5" /> Learning that fits your future</Badge>
               <h1 className="max-w-[570px] font-display text-[44px] font-bold leading-[1.04] md:text-[62px]">Build skills.<br /><span className="text-teal">Shape tomorrow.</span></h1>
               <p className="mt-5 max-w-[455px] text-base leading-7 text-slate">Learn from industry experts through practical, thoughtfully made courses. Start anytime, learn anywhere.</p>
               <div className="mt-7 flex flex-wrap gap-3"><Button size="lg" className="h-12 px-6" onClick={() => { if (!profile) { setAuthMode("signup"); setAuthOpen(true); } else go("dashboard"); }}>Start learning free <ArrowRight size={17} /></Button><Button size="lg" variant="outline" className="h-12 border-teal/30 bg-card px-6" onClick={() => document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" })}>Browse courses</Button></div>
               <div className="mt-8 flex items-center gap-3"><div className="flex -space-x-2">{["A","M","R","S","K"].map((name, i) => <Avatar key={name} className="size-9 border-2 border-background"><AvatarFallback className={`text-xs font-semibold ${i % 2 ? "bg-tint text-teal" : "bg-secondary text-primary"}`}>{name}</AvatarFallback></Avatar>)}</div><div><div className="flex items-center gap-1 text-sm font-semibold"><span className="flex text-amber-500">{[0,1,2,3,4].map((i)=><Star key={i} size={13} fill="currentColor" />)}</span><span className="ml-1">4.8</span></div><p className="text-xs text-slate">Loved by learners around the world</p></div></div>
             </div>
-            <div className="relative mx-auto w-full max-w-[620px] lg:mr-0">
-              <div className="hero-frame relative aspect-[1.2/1] overflow-hidden rounded-[26px] bg-tint">
+            <div className="hero-visual relative mx-auto w-full max-w-[620px] lg:mr-0">
+              <div className="hero-frame image-zoom relative aspect-[1.2/1] overflow-hidden rounded-[26px] bg-tint shadow-xl">
                 <img src={courseCover(demoCourses[3])} alt="Learner studying an online course at home" width={1280} height={960} fetchPriority="high" className="h-full w-full object-cover" />
               </div>
-              <div className="absolute left-3 top-4 w-[150px] rounded-xl bg-card p-3 shadow-lg md:left-[-22px] md:top-12 md:w-[175px]">
+              <div className="hero-float-card absolute left-3 top-4 w-[150px] rounded-xl bg-card p-3 shadow-lg md:left-[-22px] md:top-12 md:w-[175px]">
                 <p className="text-xs text-slate">Your progress</p>
                 <p className="mt-1 font-display text-xl font-bold">72%</p>
                 <Progress value={72} className="mt-2 h-1.5 bg-tint" />
               </div>
-              <div className="absolute bottom-4 left-3 rounded-xl bg-card px-3 py-2 shadow-lg md:bottom-8 md:left-[-16px]">
+              <div className="hero-float-card hero-float-card-delayed absolute bottom-4 left-3 rounded-xl bg-card px-3 py-2 shadow-lg md:bottom-8 md:left-[-16px]">
                 <p className="text-[11px] text-slate">Weekly goal</p>
                 <p className="font-display text-lg font-semibold">5 of 6 hours</p>
               </div>
-              <div className="absolute bottom-4 right-3 flex items-center gap-2 rounded-lg bg-card/95 px-3 py-2 shadow-lg md:bottom-8 md:right-5">
+              <div className="hero-float-card hero-float-card-delayed absolute bottom-4 right-3 flex items-center gap-2 rounded-lg bg-card/95 px-3 py-2 shadow-lg md:bottom-8 md:right-5">
                 <ShieldCheck size={18} className="text-teal" />
                 <span className="text-xs font-medium">Learn at your pace</span>
               </div>
               <span className="absolute -right-2 -top-2 size-16 rounded-full border-[9px] border-turquoise/25 md:-right-5 md:-top-5 md:size-24" aria-hidden="true" />
             </div>
           </div>
-          <div className="mx-auto mt-12 grid max-w-[1240px] grid-cols-2 divide-x divide-white/15 overflow-hidden rounded-xl bg-teal text-primary-foreground sm:grid-cols-4">
+          <div className="stats-strip mx-auto mt-12 grid max-w-[1240px] grid-cols-2 divide-x divide-white/15 overflow-hidden rounded-xl bg-teal text-primary-foreground sm:grid-cols-4">
             {[["25,000+","Active learners",Users],["1,200+","Expert instructors",GraduationCap],["3,500+","Premium courses",BookOpen],["98%","Learner satisfaction",ShieldCheck]].map(([value,label,Icon])=> <div key={String(label)} className="flex min-h-[78px] items-center justify-center gap-3 px-3 py-4 sm:justify-start sm:px-6"><span className="grid size-10 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10"><Icon size={19} /></span><span><strong className="block font-display text-lg">{String(value)}</strong><small className="text-xs text-white/75">{String(label)}</small></span></div>)}
           </div>
         </section>
 
         <section className="mx-auto max-w-[1320px] px-5 py-12 md:px-9 md:py-16" id="categories">
           <div className="flex items-end justify-between gap-4"><div><p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-teal">Find your next chapter</p><h2 className="font-display text-3xl font-bold">Explore top categories</h2><p className="mt-2 text-sm text-slate">Choose a field and start your learning journey.</p></div><Button variant="ghost" className="hidden sm:inline-flex" onClick={() => { setCategory("All courses"); document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" }); }}>View all <ArrowRight size={15} /></Button></div>
-          <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{categories.map((item) => <Button key={item.name} variant="outline" className="h-auto min-h-[122px] flex-col items-start justify-center gap-3 border-border bg-card p-4 text-left shadow-none hover:border-teal/50" onClick={() => { setCategory(item.name === "Development" || item.name === "Business" ? "All courses" : item.name); document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" }); }}><span className={`grid size-10 place-items-center rounded-full text-lg ${item.tint}`}>{item.icon}</span><span><strong className="block text-sm">{item.name}</strong><small className="mt-1 text-xs font-normal text-slate">{item.count} courses</small></span></Button>)}</div>
+          <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{categories.map((item) => <Button key={item.name} variant="outline" className="category-tile h-auto min-h-[122px] flex-col items-start justify-center gap-3 border-border bg-card p-4 text-left shadow-none hover:border-teal/50" onClick={() => { setCategory(item.name === "Development" || item.name === "Business" ? "All courses" : item.name); document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" }); }}><span className={`category-icon grid size-10 place-items-center rounded-full text-lg ${item.tint}`}>{item.icon}</span><span><strong className="block text-sm">{item.name}</strong><small className="mt-1 text-xs font-normal text-slate">{item.count} courses</small></span></Button>)}</div>
         </section>
 
         <section className="border-y border-border/70 bg-card px-5 py-12 md:px-9 md:py-16" id="courses">
@@ -288,72 +302,630 @@ function Learnova() {
           <div className="grid gap-5 sm:grid-cols-3">{[[Users,"Learn from experts","Industry professionals with useful experience to share."],[Clock3,"Flexible learning","Learn at your own pace, whenever and wherever."],[Compass,"Practical by design","Hands-on projects and skills you can apply." ]].map(([Icon,title,copy]) => <div key={String(title)} className="border-l border-border pl-5"><Icon size={30} strokeWidth={1.5} className="text-teal" /><h3 className="mt-5 font-display text-lg font-semibold">{String(title)}</h3><p className="mt-2 text-sm leading-6 text-slate">{String(copy)}</p></div>)}</div>
         </section>
         <section className="bg-teal px-5 py-12 text-primary-foreground md:px-9"><div className="mx-auto grid max-w-[1320px] gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center"><div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-turquoise">Continue your learning journey</p><h2 className="mt-3 font-display text-3xl font-bold">Small steps. Big momentum.</h2><p className="mt-2 text-sm text-white/75">Pick up where you left off and make today count.</p><Button variant="secondary" className="mt-5 bg-white/10 text-primary-foreground hover:bg-white/20" onClick={() => go("dashboard")}>View learning dashboard <ArrowRight size={15} /></Button></div><div className="grid gap-3 sm:grid-cols-3">{demoCourses.slice(0,3).map((course,i) => <button key={course.id} onClick={() => void openCourse(course)} className="flex items-center gap-3 rounded-lg border border-white/15 bg-white/5 p-3 text-left transition-colors hover:bg-white/10"><img src={course.cover} alt="" loading="lazy" width={960} height={720} className="size-14 shrink-0 rounded-md object-cover"/><span className="min-w-0 flex-1"><strong className="block truncate text-sm">{course.title}</strong><small className="mt-1 block text-white/65">{[60,35,80][i]}% complete</small><span className="mt-2 block h-1 rounded-full bg-white/20"><span className="block h-full rounded-full bg-turquoise" style={{ width: `${[60,35,80][i]}%` }} /></span></span><ArrowRight size={15} className="shrink-0"/></button>)}</div></div></section>
-        <section className="mx-auto max-w-[1320px] px-5 py-12 md:px-9 md:py-16"><div className="text-center"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-teal">The people behind the lessons</p><h2 className="mt-2 font-display text-3xl font-bold">Meet our expert instructors</h2><p className="mt-2 text-sm text-slate">Learn from professionals who love teaching.</p></div><div className="mx-auto mt-8 grid max-w-[840px] gap-4 sm:grid-cols-3">{[["CW","Cameron Williamson","Product designer","8 years experience"],["DR","Dianne Russell","Data scientist","10 years experience"],["DL","Devon Lane","Full-stack developer","7 years experience"]].map(([initials,name,role,experience],i)=><div key={name} className="border border-border/70 bg-card p-5 text-center"><Avatar className="mx-auto size-16"><AvatarFallback className={`text-xl ${i===1?"bg-tint text-teal":"bg-secondary text-primary"}`}>{initials.slice(0,1)}</AvatarFallback></Avatar><h3 className="mt-3 text-sm font-semibold">{name}</h3><p className="mt-1 text-xs text-slate">{role} · {experience}</p></div>)}</div></section>
-        <section className="mx-5 mb-12 rounded-2xl bg-tint px-6 py-8 md:mx-9 md:px-12 md:py-10"><div className="mx-auto flex max-w-[1160px] flex-col items-start justify-between gap-5 md:flex-row md:items-center"><div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-teal">A note from the community</p><p className="mt-3 max-w-[740px] font-display text-2xl font-semibold leading-snug">“Learnova changed the way I learn. The courses are practical, engaging, and absolutely worth it.”</p><p className="mt-3 text-sm text-slate">Kristin Watson · Product manager & lifelong learner</p></div><span className="flex text-amber-500">{[0,1,2,3,4].map((i)=><Star key={i} size={17} fill="currentColor" />)}</span></div></section>
         
-<section className="border-t border-border bg-card px-5 py-8 md:px-9">
-  <div className="mx-auto grid max-w-[1320px] gap-8 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+{/* Instructor section - instructors are taken from actual published courses */}
+<section
+  id="instructors"
+  className="bg-white px-5 py-16 md:px-9 md:py-20"
+>
+  <div className="mx-auto max-w-[1320px]">
+    <div className="text-center">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-teal">
+        The people behind the lessons
+      </p>
 
-    {/* Brand logo and name */}
-    <div>
-      <Button variant="ghost" className="gap-3 px-0 text-foreground">
-        <img
-          src="/vilaiyosai-logo.png"
-          alt="Vilaiyosai Logo"
-          className="h-10 w-10 object-contain"
-        />
-        <span className="font-display text-lg font-bold text-[#123B70]">
-          Vilaiyosai
-        </span>
-      </Button>
+      <h2 className="mt-3 font-display text-3xl font-bold text-[#123B70]">
+        Meet our course instructors
+      </h2>
 
-      <p className="mt-2 max-w-xs text-xs leading-5 text-slate">
-        Learn, grow, and create your future with Vilaiyosai.
+      <p className="mt-2 text-sm text-slate-600">
+        Explore the instructors behind our available courses.
       </p>
     </div>
 
-    {/* Explore */}
-    <div>
-      <h3 className="text-sm font-semibold">Explore</h3>
-      <p className="mt-3 text-xs leading-7 text-slate">
-        Courses<br />
-        Learning paths<br />
-        For business
+    {/* Get unique instructor names from the loaded course records */}
+    {(() => {
+      const instructorNames = [
+        ...new Set(
+          courses
+            .map((course) => course.instructor_name?.trim())
+            .filter((name): name is string => Boolean(name))
+        ),
+      ].slice(0, 6);
+
+      return instructorNames.length > 0 ? (
+        <div className="mx-auto mt-9 grid max-w-[1120px] gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {instructorNames.map((name) => {
+            const instructorCourses = courses.filter(
+              (course) => course.instructor_name?.trim() === name
+            );
+
+            return (
+              <div
+                key={name}
+                className="professional-card rounded-2xl border border-slate-200 bg-white p-6 text-center"
+              >
+                {/* Instructor image from an associated course */}
+<div className="mx-auto size-24 overflow-hidden rounded-full border-4 border-[#E8F5F3] shadow-md">
+  <img
+    src={courseCover(instructorCourses[0])}
+    alt={`${name} instructor`}
+    loading="lazy"
+    className="h-full w-full object-cover"
+  />
+</div>
+
+                <h3 className="mt-4 font-semibold text-[#123B70]">
+                  {name}
+                </h3>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Course instructor
+                </p>
+
+                <p className="mt-3 text-xs text-slate-600">
+                  {instructorCourses.length} available course(s)
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="mt-8 text-center text-sm text-slate-500">
+          Instructor information will appear when courses are available.
+        </p>
+      );
+    })()}
+  </div>
+</section>
+
+        <section className="mx-5 mb-12 rounded-2xl bg-tint px-6 py-8 md:mx-9 md:px-12 md:py-10"><div className="mx-auto flex max-w-[1160px] flex-col items-start justify-between gap-5 md:flex-row md:items-center"><div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-teal">A note from the community</p><p className="mt-3 max-w-[740px] font-display text-2xl font-semibold leading-snug">“Learnova changed the way I learn. The courses are practical, engaging, and absolutely worth it.”</p><p className="mt-3 text-sm text-slate">Kristin Watson · Product manager & lifelong learner</p></div><span className="flex text-amber-500">{[0,1,2,3,4].map((i)=><Star key={i} size={17} fill="currentColor" />)}</span></div></section>
+
+{/* Learning paths section */}
+<section className="bg-white px-5 py-16 md:px-9 md:py-20">
+  <div className="mx-auto max-w-[1320px]">
+    <div className="mx-auto max-w-2xl text-center animate-fade-up">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-teal">
+        Find your direction
+      </p>
+      <h2 className="mt-3 font-display text-3xl font-bold text-[#123B70] md:text-4xl">
+        Learning paths for your ambitions
+      </h2>
+      <p className="mt-4 text-sm leading-7 text-slate-600">
+        Whether you are starting out or building on your experience,
+        explore learning opportunities that help you move forward.
       </p>
     </div>
 
-    {/* Support */}
-    <div>
-      <h3 className="text-sm font-semibold">Support</h3>
-      <p className="mt-3 text-xs leading-7 text-slate">
-        Help center<br />
-        Contact us<br />
-        Privacy policy
+    <div className="mt-10 grid gap-5 md:grid-cols-3">
+      {[
+        {
+          icon: Code2,
+          title: "Technology & Development",
+          desc: "Explore programming, web development, cloud computing and practical technical skills.",
+          tags: ["Development", "Programming", "Cloud"],
+          image: demoCourses[1].cover,
+        },
+        {
+          icon: BarChart3,
+          title: "Business & Data",
+          desc: "Build your understanding of business, data analysis and modern workplace tools.",
+          tags: ["Business", "Data", "Analytics"],
+          image: demoCourses[2].cover,
+        },
+        {
+          icon: Sparkles,
+          title: "Creative & Professional Skills",
+          desc: "Develop creative thinking, communication and skills for your professional journey.",
+          tags: ["Design", "Marketing", "Growth"],
+          image: demoCourses[0].cover,
+        },
+      ].map((item, index) => {
+        const Icon = item.icon;
+
+        return (
+          <div
+            key={item.title}
+            className="professional-card animate-fade-up rounded-2xl border border-slate-200 bg-white p-6"
+            style={{ animationDelay: `${index * 150}ms` }}
+          >
+            <div className="learning-path-image relative -mx-6 -mt-6 mb-5 aspect-[16/9] overflow-hidden rounded-t-2xl">
+              <img
+                src={item.image}
+                alt={`${item.title} learning path`}
+                loading="lazy"
+                width={960}
+                height={540}
+                className="h-full w-full object-cover"
+              />
+              <span className="absolute bottom-3 left-3 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-[#123B70] shadow-sm">
+                {item.tags[0]}
+              </span>
+            </div>
+            <div className="grid size-12 place-items-center rounded-xl bg-[#E8F5F3] text-teal">
+              <Icon size={24} />
+            </div>
+
+            <h3 className="mt-5 font-display text-xl font-bold text-[#123B70]">
+              {item.title}
+            </h3>
+
+            <p className="mt-3 min-h-[72px] text-sm leading-6 text-slate-600">
+              {item.desc}
+            </p>
+
+            <div className="mt-5 flex flex-wrap gap-2">
+              {item.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-slate-100 px-3 py-1.5 text-xs text-slate-600"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <button
+              onClick={() => {
+                setCategory("All courses");
+                document.getElementById("courses")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+              className="mt-6 flex items-center gap-2 text-sm font-semibold text-teal transition-all hover:gap-3"
+            >
+              Explore courses <ArrowRight size={16} />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+{/* How it works section */}
+<section className="border-y border-slate-200 bg-[#F7FAFC] px-5 py-16 md:px-9 md:py-20">
+  <div className="mx-auto max-w-[1320px]">
+    <div className="text-center animate-fade-up">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-teal">
+        Simple learning experience
+      </p>
+      <h2 className="mt-3 font-display text-3xl font-bold text-[#123B70] md:text-4xl">
+        Your learning journey starts here
+      </h2>
+      <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-600">
+        A simple approach to help you discover courses, learn new skills
+        and keep track of your progress.
       </p>
     </div>
 
-    {/* Your learning */}
-    <div>
-      <h3 className="text-sm font-semibold">Your learning</h3>
+    <div className="relative mt-12 grid gap-8 md:grid-cols-4">
+      {[
+        {
+          number: "01",
+          icon: Search,
+          title: "Discover",
+          desc: "Find courses that match your interests and goals.",
+        },
+        {
+          number: "02",
+          icon: BookOpen,
+          title: "Enrol",
+          desc: "Choose a course and get started with your learning.",
+        },
+        {
+          number: "03",
+          icon: Video,
+          title: "Learn",
+          desc: "Explore lessons and build your knowledge step by step.",
+        },
+        {
+          number: "04",
+          icon: BarChart3,
+          title: "Grow",
+          desc: "Track your learning progress and keep improving.",
+        },
+      ].map((step, index) => {
+        const Icon = step.icon;
+
+        return (
+          <div
+            key={step.number}
+            className="animate-fade-up relative text-center"
+            style={{ animationDelay: `${index * 150}ms` }}
+          >
+            <div className="relative mx-auto grid size-[76px] place-items-center rounded-2xl border border-teal/20 bg-white text-teal shadow-sm transition-transform duration-300 hover:-translate-y-2">
+              <Icon size={29} />
+              <span className="absolute -right-2 -top-2 grid size-7 place-items-center rounded-full bg-[#123B70] text-xs font-bold text-white">
+                {step.number}
+              </span>
+            </div>
+
+            <h3 className="mt-5 font-display text-lg font-bold text-[#123B70]">
+              {step.title}
+            </h3>
+            <p className="mx-auto mt-2 max-w-[230px] text-sm leading-6 text-slate-600">
+              {step.desc}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+{/* Learning benefits section */}
+<section className="bg-white px-5 py-16 md:px-9 md:py-20">
+  <div className="mx-auto grid max-w-[1320px] items-center gap-12 lg:grid-cols-2">
+    <div className="animate-fade-up">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-teal">
+        Learn with confidence
+      </p>
+      <h2 className="mt-3 font-display text-3xl font-bold leading-tight text-[#123B70] md:text-4xl">
+        More than lessons.
+        <span className="block text-teal">A step towards your goals.</span>
+      </h2>
+      <p className="mt-5 text-sm leading-7 text-slate-600">
+        Learning is more meaningful when you can apply what you discover.
+        Vilaiyosai brings learning resources and a structured experience
+        together to support your growth.
+      </p>
+
+      <div className="mt-7 space-y-5">
+        {[
+          ["Flexible learning", "Explore learning at a pace that works for you."],
+          ["Organised lessons", "Follow course content in a clear learning structure."],
+          ["Progress tracking", "Keep track of completed lessons in your dashboard."],
+          ["Learning access", "Return to your available courses from your account."],
+        ].map(([title, desc]) => (
+          <div key={title} className="flex items-start gap-3">
+            <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[#E8F5F3] text-teal">
+              <Check size={15} />
+            </span>
+            <div>
+              <h3 className="text-sm font-semibold text-[#123B70]">{title}</h3>
+              <p className="mt-1 text-sm leading-6 text-slate-600">{desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <Button
-        variant="link"
-        className="mt-2 h-auto p-0 text-xs text-teal"
-        onClick={() => go("dashboard")}
+        className="mt-8 h-11 bg-[#123B70] px-6 hover:bg-[#0D2F5B]"
+        onClick={() => {
+          setAuthMode("signup");
+          setAuthOpen(true);
+        }}
       >
-        My courses <ArrowRight size={13} />
+        Create your account <ArrowRight size={16} />
       </Button>
-      <br />
-      <Button
-        variant="link"
-        className="mt-2 h-auto p-0 text-xs text-teal"
-        onClick={() => go("admin")}
-      >
-        Administration <ArrowRight size={13} />
-      </Button>
+    </div>
+
+    <div className="animate-fade-in rounded-3xl border border-slate-200 bg-[#F7FAFC] p-6 md:p-9">
+      <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-slate-500">Your learning space</p>
+            <h3 className="mt-1 font-display text-xl font-bold text-[#123B70]">
+              Keep moving forward
+            </h3>
+          </div>
+          <span className="grid size-11 place-items-center rounded-xl bg-[#E8F5F3] text-teal">
+            <GraduationCap size={23} />
+          </span>
+        </div>
+
+        <div className="mt-7 space-y-5">
+          {[
+            ["Course discovery", "Explore courses that interest you", 100],
+            ["Learning progress", "Keep track of your lessons", 70],
+            ["Personal growth", "Build skills consistently", 85],
+          ].map(([title, desc, value]) => (
+            <div key={String(title)}>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-semibold text-[#123B70]">
+                  {String(title)}
+                </span>
+                <span className="text-xs font-semibold text-teal">
+                  {String(value)}%
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-slate-500">{String(desc)}</p>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="h-full rounded-full bg-teal transition-all duration-1000"
+                  style={{ width: `${value}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-7 rounded-xl bg-[#E8F5F3] p-4">
+          <p className="text-sm font-semibold text-[#123B70]">
+            Every step counts.
+          </p>
+          <p className="mt-1 text-xs leading-5 text-slate-600">
+            Build a learning habit and keep working towards your goals.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* FAQ section */}
+<section className="border-t border-slate-200 bg-[#F7FAFC] px-5 py-16 md:px-9 md:py-20">
+  <div className="mx-auto max-w-[850px]">
+    <div className="text-center animate-fade-up">
+      <p className="text-xs font-bold uppercase tracking-[0.15em] text-teal">
+        Frequently asked questions
+      </p>
+      <h2 className="mt-3 font-display text-3xl font-bold text-[#123B70]">
+        Have questions?
+      </h2>
+      <p className="mt-3 text-sm text-slate-600">
+        Here are a few things you may want to know before getting started.
+      </p>
+    </div>
+
+    <Accordion type="single" collapsible className="mt-9">
+      {[
+        {
+          q: "How do I get started with Vilaiyosai?",
+          a: "Create an account, explore the available courses and choose a course that matches your learning interests.",
+        },
+        {
+          q: "Can I learn at my own pace?",
+          a: "You can access your available lessons and continue learning at a pace that suits your schedule.",
+        },
+        {
+          q: "Where can I find my enrolled courses?",
+          a: "Sign in to your account and open My Learning to view courses available in your learning library.",
+        },
+        {
+          q: "Can I track my learning progress?",
+          a: "Your learning dashboard helps you view lesson completion and saved progress for supported lessons.",
+        },
+        {
+          q: "How can I get help?",
+          a: "Use the Contact Us or Help & Support links to reach the Vilaiyosai team once the support contact details are configured.",
+        },
+      ].map((item, index) => (
+        <AccordionItem
+          key={item.q}
+          value={`faq-${index}`}
+          className="border-b border-slate-200"
+        >
+          <AccordionTrigger className="text-left font-semibold text-[#123B70] hover:text-teal">
+            {item.q}
+          </AccordionTrigger>
+          <AccordionContent className="text-sm leading-7 text-slate-600">
+            {item.a}
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
+  </div>
+</section>
+
+{/* Arivu-inspired white footer for Vilaiyosai */}
+<footer className="border-t border-slate-200 bg-white px-5 py-12 md:px-9 md:py-16">
+  <div className="mx-auto max-w-[1320px]">
+
+    {/* Main footer columns */}
+    <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+
+      {/* Brand section */}
+      <div>
+        <button
+          onClick={() => {
+            setView("store");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className="flex items-center gap-3"
+        >
+          <img
+            src="/vilaiyosai-logo.png"
+            alt="Vilaiyosai Logo"
+            className="h-12 w-12 object-contain"
+          />
+          <span className="font-display text-2xl font-bold text-[#123B70]">
+            Vilaiyosai
+          </span>
+        </button>
+
+        <p className="mt-5 max-w-xs text-sm leading-7 text-slate-600">
+          Empowering learners with practical knowledge, expert guidance
+          and skills to build a brighter future.
+        </p>
+
+        {/* Social media links: replace with official profile URLs */}
+        <div className="mt-6 flex items-center gap-3">
+          <a
+            href="https://www.linkedin.com/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn"
+            className="grid size-9 place-items-center rounded-full border border-slate-200 text-slate-600 transition hover:border-[#123B70] hover:bg-[#123B70] hover:text-white"
+          >
+            <Users size={17} />
+          </a>
+
+          <a
+            href="https://www.instagram.com/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram"
+            className="grid size-9 place-items-center rounded-full border border-slate-200 text-slate-600 transition hover:border-[#123B70] hover:bg-[#123B70] hover:text-white"
+          >
+            <Compass size={17} />
+          </a>
+
+          <a
+            href="https://www.youtube.com/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="YouTube"
+            className="grid size-9 place-items-center rounded-full border border-slate-200 text-slate-600 transition hover:border-[#123B70] hover:bg-[#123B70] hover:text-white"
+          >
+            <CirclePlay size={17} />
+          </a>
+        </div>
+      </div>
+
+      {/* Explore links */}
+      <div>
+        <h3 className="mb-5 text-sm font-bold text-[#123B70]">
+          Explore
+        </h3>
+
+        <ul className="space-y-3 text-sm text-slate-600">
+          <li>
+            <button
+              onClick={() => {
+                setView("store");
+                document.getElementById("courses")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+              className="transition hover:text-[#123B70]"
+            >
+              Browse Courses
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => {
+                setView("store");
+                document.getElementById("categories")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+              className="transition hover:text-[#123B70]"
+            >
+              Course Categories
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => {
+                setView("store");
+                document.getElementById("why-learnova")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+              className="transition hover:text-[#123B70]"
+            >
+              Our Approach
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => {
+                setAuthMode("signup");
+                setAuthOpen(true);
+              }}
+              className="transition hover:text-[#123B70]"
+            >
+              Become a Learner
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      {/* Company links */}
+      <div>
+        <h3 className="mb-5 text-sm font-bold text-[#123B70]">
+          Company
+        </h3>
+
+        <ul className="space-y-3 text-sm text-slate-600">
+          <li>
+            <a href="#why-learnova" className="transition hover:text-[#123B70]">
+              About Us
+            </a>
+          </li>
+          <li>
+            <a href="#why-learnova" className="transition hover:text-[#123B70]">
+              Our Mission
+            </a>
+          </li>
+          <li>
+            <a href="mailto:your-email@example.com" className="transition hover:text-[#123B70]">
+              Contact Us
+            </a>
+          </li>
+          <li>
+            <a href="#courses" className="transition hover:text-[#123B70]">
+              Our Courses
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      {/* Learning and support */}
+      <div>
+        <h3 className="mb-5 text-sm font-bold text-[#123B70]">
+          Learning & Support
+        </h3>
+
+        <ul className="space-y-3 text-sm text-slate-600">
+          <li>
+            <button
+              onClick={() => go("dashboard")}
+              className="transition hover:text-[#123B70]"
+            >
+              My Learning
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => go("dashboard")}
+              className="transition hover:text-[#123B70]"
+            >
+              My Courses
+            </button>
+          </li>
+          <li>
+            <a href="mailto:your-email@example.com" className="transition hover:text-[#123B70]">
+              Help & Support
+            </a>
+          </li>
+          <li>
+            <button
+              onClick={() => go("admin")}
+              className="transition hover:text-[#123B70]"
+            >
+              Administration
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    {/* Bottom divider */}
+    <div className="my-10 border-t border-slate-200" />
+
+    {/* Copyright and legal links */}
+    <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+      <p className="text-xs text-slate-500">
+        © {new Date().getFullYear()} Vilaiyosai. All rights reserved.
+      </p>
+
+      <div className="flex flex-wrap justify-center gap-5 text-xs text-slate-500">
+        <a href="/privacy-policy" className="transition hover:text-[#123B70]">
+          Privacy Policy
+        </a>
+        <a href="/terms-and-conditions" className="transition hover:text-[#123B70]">
+          Terms & Conditions
+        </a>
+      </div>
     </div>
 
   </div>
-</section>
+</footer>
+
 
       </main>}
 
@@ -372,16 +944,245 @@ function Learnova() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={authOpen} onOpenChange={setAuthOpen}>
-        <DialogContent className="max-w-[440px]">
-          <DialogHeader><DialogTitle className="font-display text-2xl">{authMode === "signup" ? "Start learning with Learnova" : "Welcome back"}</DialogTitle><DialogDescription>{authMode === "signup" ? "Create an account to keep your learning in one place." : "Sign in to continue where you left off."}</DialogDescription></DialogHeader>
-          <form className="mt-3 space-y-3" onSubmit={(event)=>void handleAuth(event)}>{authMode === "signup" && <Input required maxLength={80} value={authForm.displayName} onChange={(e)=>setAuthForm({...authForm,displayName:e.target.value})} placeholder="Your name" aria-label="Your name"/>}<Input required type="email" maxLength={255} value={authForm.email} onChange={(e)=>setAuthForm({...authForm,email:e.target.value})} placeholder="Email address" aria-label="Email address"/><Input required type="password" minLength={8} maxLength={72} value={authForm.password} onChange={(e)=>setAuthForm({...authForm,password:e.target.value})} placeholder="Password · at least 8 characters" aria-label="Password"/><Button disabled={busy} className="w-full" type="submit">{busy?"Please wait…":authMode==="signup"?"Create account":"Sign in"} <ArrowRight size={15}/></Button></form>
-          <div className="my-1 flex items-center gap-3 text-[11px] text-slate"><span className="h-px flex-1 bg-border"/>OR CONTINUE WITH<span className="h-px flex-1 bg-border"/></div>
-          <div className="grid grid-cols-2 gap-2"><Button disabled={busy} variant="outline" onClick={()=>void socialSignIn("google")}><GoogleMark/>Google</Button><Button disabled={busy} variant="outline" onClick={()=>void socialSignIn("lovable")}><span className="grid size-[18px] place-items-center rounded-sm bg-foreground text-[11px] font-bold text-background">L</span>Lovable</Button></div>
-          <p className="text-center text-sm text-slate">{authMode==="signup"?"Already have an account?":"New to Learnova?"} <Button variant="link" className="h-auto p-0 text-teal" onClick={()=>setAuthMode(authMode==="signup"?"signin":"signup")}>{authMode==="signup"?"Sign in":"Create account"}</Button></p>
-          {profile && <Button variant="ghost" onClick={()=>void signOut()}>Sign out</Button>}
-        </DialogContent>
-      </Dialog>
+{/* Premium split-screen authentication UI.
+    Existing handleAuth and socialSignIn functions remain unchanged. */}
+<Dialog
+  open={authOpen}
+  onOpenChange={(open) => {
+    setAuthOpen(open);
+    if (!open) setShowPassword(false);
+  }}
+>
+  <DialogContent className="max-h-[92vh] max-w-[900px] overflow-y-auto p-0">
+    <div className="grid min-h-[540px] md:grid-cols-2">
+
+      {/* Left branding panel */}
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-[#123B70] p-9 text-white md:flex">
+        <div className="absolute -right-20 -top-20 size-64 rounded-full border-[35px] border-white/5" />
+        <div className="absolute -bottom-24 -left-20 size-72 rounded-full bg-teal/20 blur-2xl" />
+
+        <div className="relative z-10 flex items-center gap-3">
+          <img
+            src="/vilaiyosai-logo.png"
+            alt="Vilaiyosai"
+            className="size-12 rounded-xl bg-white object-contain p-1"
+          />
+          <div>
+            <p className="text-xl font-bold">Vilaiyosai</p>
+            <p className="text-[10px] tracking-[0.2em] text-white/65">
+              LEARN · GROW · ACHIEVE
+            </p>
+          </div>
+        </div>
+
+        <div className="relative z-10 py-10">
+          <Badge className="border border-white/20 bg-white/10 text-white">
+            <Sparkles size={13} className="mr-1.5" />
+            Your learning journey
+          </Badge>
+
+          <h2 className="mt-6 font-display text-4xl font-bold leading-tight">
+            Invest in your skills.
+            <span className="block text-[#65D6C5]">
+              Grow with confidence.
+            </span>
+          </h2>
+
+          <p className="mt-5 max-w-sm text-sm leading-7 text-white/75">
+            Discover courses, learn at your own pace and keep your learning
+            progress organised in one place.
+          </p>
+
+          <div className="mt-8 space-y-4 text-sm text-white/85">
+            {[
+              "Explore practical learning resources",
+              "Continue lessons from your dashboard",
+              "Track your learning progress",
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-3">
+                <span className="grid size-6 place-items-center rounded-full bg-white/15">
+                  <Check size={14} />
+                </span>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p className="relative z-10 text-xs text-white/55">
+          Learn something meaningful. Every day.
+        </p>
+      </div>
+
+      {/* Right authentication form */}
+      <div className="flex flex-col justify-center p-6 sm:p-9">
+        <DialogHeader>
+          <div className="mb-5 flex items-center gap-3 md:hidden">
+            <img
+              src="/vilaiyosai-logo.png"
+              alt="Vilaiyosai"
+              className="size-10 object-contain"
+            />
+            <span className="font-display text-xl font-bold text-[#123B70]">
+              Vilaiyosai
+            </span>
+          </div>
+
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-teal">
+            {authMode === "signup" ? "Create your account" : "Welcome back"}
+          </p>
+
+          <DialogTitle className="mt-2 font-display text-3xl font-bold text-[#123B70]">
+            {authMode === "signup"
+              ? "Start learning today."
+              : "Good to see you again."}
+          </DialogTitle>
+
+          <DialogDescription className="mt-2 leading-6">
+            {authMode === "signup"
+              ? "Create your account and begin your learning journey."
+              : "Sign in to access your courses and learning progress."}
+          </DialogDescription>
+        </DialogHeader>
+
+        <form
+          className="mt-7 space-y-4"
+          onSubmit={(event) => void handleAuth(event)}
+        >
+          {authMode === "signup" && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Full name</label>
+              <Input
+                required
+                maxLength={80}
+                value={authForm.displayName}
+                onChange={(e) =>
+                  setAuthForm({ ...authForm, displayName: e.target.value })
+                }
+                placeholder="Enter your name"
+                className="h-12 rounded-xl"
+                aria-label="Your name"
+              />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Email address</label>
+            <Input
+              required
+              type="email"
+              maxLength={255}
+              value={authForm.email}
+              onChange={(e) =>
+                setAuthForm({ ...authForm, email: e.target.value })
+              }
+              placeholder="you@example.com"
+              className="h-12 rounded-xl"
+              aria-label="Email address"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Password</label>
+
+            <div className="relative">
+              <Input
+                required
+                type={showPassword ? "text" : "password"}
+                minLength={8}
+                maxLength={72}
+                value={authForm.password}
+                onChange={(e) =>
+                  setAuthForm({ ...authForm, password: e.target.value })
+                }
+                placeholder="At least 8 characters"
+                className="h-12 rounded-xl pr-12"
+                aria-label="Password"
+              />
+
+              {/* Toggle password visibility without changing auth behaviour */}
+              <button
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-[#123B70]"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          <Button
+            disabled={busy}
+            type="submit"
+            className="h-12 w-full rounded-xl bg-[#123B70] text-white hover:bg-[#0D2F5B]"
+          >
+            {busy
+              ? "Please wait..."
+              : authMode === "signup"
+                ? "Create account"
+                : "Sign in"}
+            <ArrowRight size={16} />
+          </Button>
+        </form>
+
+        <div className="my-5 flex items-center gap-3 text-[10px] font-medium tracking-wider text-slate-400">
+          <span className="h-px flex-1 bg-border" />
+          OR CONTINUE WITH
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            disabled={busy}
+            variant="outline"
+            className="h-11 rounded-xl"
+            onClick={() => void socialSignIn("google")}
+          >
+            <GoogleMark /> Google
+          </Button>
+
+          <Button
+            disabled={busy}
+            variant="outline"
+            className="h-11 rounded-xl"
+            onClick={() => void socialSignIn("lovable")}
+          >
+            <span className="grid size-[18px] place-items-center rounded-sm bg-foreground text-[11px] font-bold text-background">
+              L
+            </span>
+            Lovable
+          </Button>
+        </div>
+
+        <p className="mt-6 text-center text-sm text-slate">
+          {authMode === "signup"
+            ? "Already have an account?"
+            : "New to Vilaiyosai?"}
+
+          <Button
+            type="button"
+            variant="link"
+            className="ml-1 h-auto p-0 font-semibold text-teal"
+            onClick={() => {
+              setAuthMode(authMode === "signup" ? "signin" : "signup");
+              setShowPassword(false);
+            }}
+          >
+            {authMode === "signup" ? "Sign in" : "Create account"}
+          </Button>
+        </p>
+
+        {profile && (
+          <Button variant="ghost" className="mt-2" onClick={() => void signOut()}>
+            Sign out
+          </Button>
+        )}
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
+
     </div>
   );
 }
@@ -391,7 +1192,7 @@ function GoogleMark() {
 }
 
 function CourseCard({ course, featured, onOpen }: { course: Course; featured: boolean; onOpen: () => void }) {
-  return <article className="group overflow-hidden rounded-lg border border-border/80 bg-background transition-shadow hover:shadow-md"><button onClick={onOpen} className="course-cover relative block w-full overflow-hidden text-left"><img src={courseCover(course)} alt={`${course.title} course`} loading="lazy" width={960} height={720} className="transition-transform duration-500 group-hover:scale-[1.04]"/>{featured && <Badge className="absolute left-3 top-3 border-0 bg-primary text-primary-foreground">BESTSELLER</Badge>}<span className="absolute bottom-3 right-3 grid size-10 place-items-center rounded-full bg-card/95 text-teal"><CirclePlay size={19}/></span></button><div className="p-4"><p className="text-[11px] font-medium text-teal">{course.category} <span className="text-slate">· {course.level}</span></p><button onClick={onOpen} className="mt-1 block text-left font-display text-[16px] font-semibold leading-snug hover:text-teal">{course.title}</button><p className="mt-1 line-clamp-2 min-h-10 text-xs leading-5 text-slate">{course.short_description}</p><div className="mt-3 flex items-center gap-2"><Avatar className="size-6"><AvatarFallback className="bg-tint text-[9px] text-teal">{course.instructor_name.slice(0,1)}</AvatarFallback></Avatar><span className="text-xs text-slate">{course.instructor_name}</span><span className="ml-auto flex items-center gap-1 text-xs font-medium"><Star size={13} className="fill-amber-400 text-amber-400"/>{course.rating}{course.students&&<span className="text-slate">({course.students})</span>}</span></div><div className="mt-3 flex items-center justify-between border-t border-border pt-3"><span className="font-display text-lg font-bold">{formatMoney(course.discount_price??course.price,course.currency)}<s className="ml-1 text-xs font-normal text-slate">{formatMoney(course.price,course.currency)}</s></span><Button size="sm" variant="ghost" className="h-8 px-2 text-teal" onClick={onOpen}>Explore <ArrowRight size={14}/></Button></div></div></article>;
+  return <article className="course-card group overflow-hidden rounded-lg border border-border/80 bg-background transition-shadow hover:shadow-md"><button onClick={onOpen} className="course-cover relative block w-full overflow-hidden text-left"><img src={courseCover(course)} alt={`${course.title} course`} loading="lazy" width={960} height={720} className="transition-transform duration-500 group-hover:scale-[1.04]"/>{featured && <Badge className="absolute left-3 top-3 border-0 bg-primary text-primary-foreground">BESTSELLER</Badge>}<span className="absolute bottom-3 right-3 grid size-10 place-items-center rounded-full bg-card/95 text-teal"><CirclePlay size={19}/></span></button><div className="p-4"><p className="text-[11px] font-medium text-teal">{course.category} <span className="text-slate">· {course.level}</span></p><button onClick={onOpen} className="mt-1 block text-left font-display text-[16px] font-semibold leading-snug hover:text-teal">{course.title}</button><p className="mt-1 line-clamp-2 min-h-10 text-xs leading-5 text-slate">{course.short_description}</p><div className="mt-3 flex items-center gap-2"><Avatar className="size-6"><AvatarFallback className="bg-tint text-[9px] text-teal">{course.instructor_name.slice(0,1)}</AvatarFallback></Avatar><span className="text-xs text-slate">{course.instructor_name}</span><span className="ml-auto flex items-center gap-1 text-xs font-medium"><Star size={13} className="fill-amber-400 text-amber-400"/>{course.rating}{course.students&&<span className="text-slate">({course.students})</span>}</span></div><div className="mt-3 flex items-center justify-between border-t border-border pt-3"><span className="font-display text-lg font-bold">{formatMoney(course.discount_price??course.price,course.currency)}<s className="ml-1 text-xs font-normal text-slate">{formatMoney(course.price,course.currency)}</s></span><Button size="sm" variant="ghost" className="h-8 px-2 text-teal" onClick={onOpen}>Explore <ArrowRight size={14}/></Button></div></div></article>;
 }
 
 function Dashboard({ profile, courses, courseAccess, progressRows, orders, onBack, onOpenCourse, onPlay, onSignOut }: { profile: Profile; courses: Course[]; courseAccess: string[]; progressRows: Array<{lesson_id:string;last_position_seconds:number;completed:boolean}>; orders: Array<{id:string;order_number:string;amount:number;currency:string;status:string;created_at:string;course_id:string}>; onBack:()=>void; onOpenCourse:(course:Course)=>void; onPlay:(course:Course)=>void; onSignOut:()=>void }) {
